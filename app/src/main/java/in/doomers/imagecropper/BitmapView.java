@@ -5,11 +5,15 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.os.Environment;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.SparseArray;
+import android.util.TypedValue;
 import android.view.View;
 
 import com.google.android.gms.vision.Detector;
@@ -27,6 +31,18 @@ public class BitmapView extends View {
     private Bitmap mBitmap;
     private SparseArray<Face> mFaces;
     Bitmap facebitmap;
+    private boolean erase=false;
+    private float brushSize, lastBrushSize;
+    //drawing path
+    private Path drawPath;
+    //drawing and canvas paint
+    private Paint drawPaint, canvasPaint;
+    //initial color
+    private int paintColor = 0xFF660000;
+    //canvas
+    private Canvas drawCanvas;
+    //canvas bitmap
+    private Bitmap canvasBitmap;
 
 
 
@@ -186,5 +202,17 @@ public class BitmapView extends View {
             Log.e( "Tuts+ Face Detection", "Euler Y: " + eulerY );
             Log.e( "Tuts+ Face Detection", "Euler Z: " + eulerZ );
         }
+    }
+
+    public void setErase(boolean isErase){
+        erase=isErase;
+        if(erase) drawPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+        else drawPaint.setXfermode(null);
+    }
+    public void setBrushSize(float newSize){
+        float pixelAmount = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                newSize, getResources().getDisplayMetrics());
+        brushSize=pixelAmount;
+        drawPaint.setStrokeWidth(brushSize);
     }
 }
